@@ -55,15 +55,30 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-// set header response sebagai json
-// ambil parameter dari url
-// konversi string id menjadi int
-// cari dan update user
-// hapus user lama dari slice
-// ambil data baru
-// pertahankan id yang sama
-// tambahkan user yang sudah di update
-// kirim user yang sudah diupdate
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	// set header response sebagai json
+	w.Header().Set("Content-Type", "application/json")
+	// ambil parameter dari url
+	params := mux.Vars(r)
+	// konversi string id menjadi int
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		http.Error(w, "invalid user", http.StatusBadRequest)
+		return
+	}
+	// cari dan update user
+	for index, item := range users {
+		if item.ID == id {
+			users = append(users[:index], users[index+1:]...)
+			var user models.User
+			_ = json.NewDecoder(r.Body).Decode(&user)
+			item.ID = id
+			users = append(users, user)
+			json.NewEncoder(w).Encode(user)
+			return
+		}
+	}
+}
 
 // set header response sebagai json
 // ambil parameter dari url
