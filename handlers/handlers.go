@@ -40,6 +40,21 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "user not found", http.StatusNotFound)
 }
 
+func CreateUser(w http.ResponseWriter, r *http.Request) {
+	// set header response sebagai json
+	w.Header().Set("Content-Type", "application/json")
+	// siapkan variable untuk menampung input
+	var user models.User
+	// decode body request json ke struct user
+	json.NewDecoder(r.Body).Decode(&user)
+	// generate ID sederhana dari slice users
+	user.ID = len(users) + 1
+	// tambahkan user yang baru dibuat
+	users = append(users, user)
+	// kirim user yang sudah ditambahkan
+	json.NewEncoder(w).Encode(user)
+}
+
 // set header response sebagai json
 // ambil parameter dari url
 // konversi string id menjadi int
