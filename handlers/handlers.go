@@ -78,11 +78,29 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	http.Error(w, "user not found", http.StatusNotFound)
 }
 
-// set header response sebagai json
-// ambil parameter dari url
-// konversi string id menjadi int
-// cari dan hapus user
-// hapus user dari slice
-// http.error status no content
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	// set header response sebagai json
+	w.Header().Set("Content-Type", "application/json")
+	// ambil parameter dari url
+	params := mux.Vars(r)
+	// konversi string id menjadi int
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		http.Error(w, "invalid user", http.StatusBadRequest)
+		return
+	}
+	// cari dan hapus user
+	for index, item := range users {
+		if item.ID == id {
+			// hapus user dari slice
+			users = append(users[:index], users[index+1:]...)
+			// http.error status no content
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+	}
+	http.Error(w, "user not found", http.StatusNotFound)
+}
